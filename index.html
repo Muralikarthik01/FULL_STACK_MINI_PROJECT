@@ -1,322 +1,212 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resource Management System</title>
+    <title>Hardik Herbals - Resource Management</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    ```
     <!-- Sidebar -->
-
-    <div class="sidebar">
-
+    <aside class="sidebar">
         <h2>Hardik Herbals</h2>
-        <p>Resource Management</p>
+        <p class="subtitle">Resource Management</p>
 
-        <ul>
-            <li onclick="showSection('dashboard')">Dashboard</li>
-        </ul>
+        <nav>
+            <button class="nav-btn active" onclick="showPage('home', this)">
+                Home
+            </button>
 
-    </div>
+            <button class="nav-btn" onclick="showPage('products', this)">
+                View Products
+            </button>
+        </nav>
+    </aside>
 
 
     <!-- Main Content -->
+    <main class="main-content">
 
-    <div class="main">
+        <!-- HOME PAGE -->
+        <section id="homePage">
 
-        <header>
             <h1>Resource Management System</h1>
-            <p>Manage and monitor your resources</p>
-        </header>
+            <p class="description">Manage your inventory resources</p>
 
 
-        <!-- Dashboard -->
+            <!-- Row 1: Raw Ingredients -->
+            <div class="entry-row">
+                <h2>Raw Ingredients</h2>
 
-        <section id="dashboard" class="section">
+                <form id="rawForm" class="entry-form">
 
-            <h2>Dashboard</h2>
+                    <input type="text" id="rawName" placeholder="Ingredient Name" required>
 
-            <div class="cards">
+                    <input type="number" id="rawQty" placeholder="Quantity" min="0" step="any" required>
 
-                <div class="card raw-card" onclick="showSection('rawMaterials')">
-
-                    <h2>🌿</h2>
-                    <h3>Raw Materials</h3>
-                    <p id="rawCount">0</p>
-                    <span>Manage Raw Materials →</span>
-
-                </div>
-
-
-                <div class="card packaging-card" onclick="showSection('packagingMaterials')">
-
-                    <h2>📦</h2>
-                    <h3>Packaging Materials</h3>
-                    <p id="packagingCount">0</p>
-                    <span>Manage Packaging →</span>
-
-                </div>
-
-
-                <div class="card product-card" onclick="showSection('products')">
-
-                    <h2>🏷️</h2>
-                    <h3>Total Products</h3>
-                    <p id="productCount">0</p>
-                    <span>Manage Products →</span>
-
-                </div>
-
-            </div>
-
-
-            <h2>Recent Entries</h2>
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-
-                <tbody id="dashboardTable"></tbody>
-
-            </table>
-
-        </section>
-
-
-
-        <!-- Raw Materials -->
-
-        <section id="rawMaterials" class="section hidden">
-
-            <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
-
-            <h2>Raw Materials Management</h2>
-
-            <div class="form-container">
-
-                <h3>Add / Update Raw Material</h3>
-
-                <form id="rawForm">
-
-                    <input type="hidden" id="rawEditId">
-
-                    <label>Material Name</label>
-                    <input type="text" id="rawName" placeholder="Enter material name" required>
-
-                    <label>Quantity</label>
-                    <input type="number" id="rawQuantity" placeholder="Enter quantity" min="0" step="any" required>
-
-                    <label>Unit</label>
-                    <select id="rawUnit" required>
-                        <option value="">Select Unit</option>
-                        <option value="kg">Kilograms (kg)</option>
-                        <option value="g">Grams (g)</option>
+                    <select id="rawUnit">
+                        <option value="Kg">Kg</option>
+                        <option value="Grams">Grams</option>
                     </select>
 
-                    <label>Date</label>
+                    <input type="number" id="rawMin" placeholder="Minimum Stock" min="0" step="any" required>
+
                     <input type="date" id="rawDate" required>
 
-                    <button type="submit" id="rawSubmit">Add Material</button>
+                    <button type="submit">Add</button>
 
                 </form>
-
             </div>
 
 
-            <h3>Raw Materials List</h3>
+            <!-- Row 2: Packaging Materials -->
+            <div class="entry-row">
+                <h2>Packaging Materials</h2>
 
-            <input type="text" id="rawSearch" placeholder="Search raw materials..." oninput="displayRawMaterials()">
+                <form id="packForm" class="entry-form">
 
-            <div class="table-container">
+                    <input type="text" id="packName" placeholder="Material Name" required>
 
-                <table>
+                    <input type="text" id="packSize" placeholder="Size (500ml, 1L)" required>
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Material Name</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <input type="number" id="packQty" placeholder="Quantity (Pieces)" min="0" required>
 
-                    <tbody id="rawTable"></tbody>
+                    <input type="number" id="packMin" placeholder="Minimum Stock" min="0" required>
 
-                </table>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- Packaging Materials -->
-
-        <section id="packagingMaterials" class="section hidden">
-
-            <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
-
-            <h2>Packaging Materials Management</h2>
-
-            <div class="form-container">
-
-                <h3>Add / Update Packaging Material</h3>
-
-                <form id="packagingForm">
-
-                    <input type="hidden" id="packEditId">
-
-                    <label>Material Name</label>
-                    <select id="packName" required>
-                        <option value="">Select Material</option>
-                        <option value="Bottle">Bottle</option>
-                        <option value="Name Sticker">Name Sticker</option>
-                        <option value="Container">Container</option>
-                        <option value="Box">Box</option>
-                        <option value="Cover">Cover</option>
-                        <option value="Other">Other</option>
-                    </select>
-
-                    <label>Capacity</label>
-                    <input type="text" id="packCapacity" placeholder="Example: 500ml, 1L, Standard" required>
-
-                    <label>Number of Boxes / Bundles</label>
-                    <input type="number" id="packBoxes" placeholder="Example: 5" min="1" step="1" required>
-
-                    <label>Quantity Per Box / Bundle</label>
-                    <input type="number" id="packPerBox" placeholder="Example: 100" min="1" step="1" required>
-
-                    <label>Date</label>
                     <input type="date" id="packDate" required>
 
-                    <button type="submit" id="packSubmit">Add Packaging</button>
+                    <button type="submit">Add</button>
 
                 </form>
-
-                <p class="calculation" id="packCalculation">
-                    Total Quantity: 0
-                </p>
-
             </div>
 
 
-            <h3>Packaging Materials List</h3>
+            <!-- Row 3: Ready Products -->
+            <div class="entry-row">
+                <h2>Ready Products</h2>
 
-            <input type="text" id="packSearch" placeholder="Search packaging materials..." oninput="displayPackaging()">
+                <form id="readyForm" class="entry-form">
 
-            <div class="table-container">
+                    <input type="text" id="readyName" placeholder="Product Name" required>
 
-                <table>
+                    <input type="number" id="readyQty" placeholder="Quantity" min="0" step="any" required>
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Material Name</th>
-                            <th>Capacity</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="packTable"></tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- Total Products -->
-
-        <section id="products" class="section hidden">
-
-            <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
-
-            <h2>Finished Products Management</h2>
-
-            <div class="form-container">
-
-                <h3>Add / Update Product</h3>
-
-                <form id="productForm">
-
-                    <input type="hidden" id="productEditId">
-
-                    <label>Product Name</label>
-                    <input type="text" id="productName" placeholder="Enter product name" required>
-
-                    <label>Quantity</label>
-                    <input type="number" id="productQuantity" placeholder="Enter quantity" min="0" step="any" required>
-
-                    <label>Unit</label>
-                    <select id="productUnit" required>
-                        <option value="">Select Unit</option>
+                    <select id="readyUnit">
                         <option value="Pieces">Pieces</option>
                         <option value="Packets">Packets</option>
                         <option value="Boxes">Boxes</option>
                         <option value="Bottles">Bottles</option>
-                        <option value="kg">Kg</option>
+                        <option value="Kg">Kg</option>
                     </select>
 
-                    <label>Date</label>
-                    <input type="date" id="productDate" required>
+                    <input type="number" id="readyMin" placeholder="Minimum Stock" min="0" step="any" required>
 
-                    <button type="submit" id="productSubmit">Add Product</button>
+                    <input type="date" id="readyDate" required>
+
+                    <button type="submit">Add</button>
 
                 </form>
+            </div>
 
+            <p id="message"></p>
+
+        </section>
+
+
+        <!-- VIEW PRODUCTS PAGE -->
+        <section id="productsPage" class="hidden">
+
+            <h1>View Products</h1>
+            <p class="description">Available stock details</p>
+
+            <!-- Stock Indicator Legend -->
+            <div class="legend">
+                <span class="status in-stock">● In Stock</span>
+                <span class="status low-stock">● Low Stock</span>
+                <span class="status out-stock">● Out of Stock</span>
+            </div>
+
+            <!-- Search -->
+            <input type="text" id="searchInput" placeholder="Search products..." class="search-box">
+
+
+            <!-- Raw Ingredients -->
+            <div class="stock-section">
+                <h2>Raw Ingredients</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Minimum Stock</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="rawTable"></tbody>
+                    </table>
+                </div>
             </div>
 
 
-            <h3>Products List</h3>
+            <!-- Packaging Materials -->
+            <div class="stock-section">
+                <h2>Packaging Materials</h2>
 
-            <input type="text" id="productSearch" placeholder="Search products..." oninput="displayProducts()">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Minimum Stock</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
 
-            <div class="table-container">
+                        <tbody id="packTable"></tbody>
+                    </table>
+                </div>
+            </div>
 
-                <table>
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+            <!-- Ready Products -->
+            <div class="stock-section">
+                <h2>Ready Products</h2>
 
-                    <tbody id="productTable"></tbody>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Minimum Stock</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
 
-                </table>
-
+                        <tbody id="readyTable"></tbody>
+                    </table>
+                </div>
             </div>
 
         </section>
 
-    </div>
+    </main>
 
-
-    <script src="./script.js"></script>
-    ```
+    <script src="script.js"></script>
 
 </body>
 
