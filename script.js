@@ -1,176 +1,32 @@
-// Get resources from Local Storage
+// Load saved data
 
-let resources = JSON.parse(localStorage.getItem("resources")) || [];
+let rawMaterials = JSON.parse(localStorage.getItem("rawMaterials")) || [];
 
-// Display different sections
+let packagingMaterials = JSON.parse(localStorage.getItem("packagingMaterials")) || [];
 
-function showSection(sectionId) {
+let products = JSON.parse(localStorage.getItem("products")) || [];
 
+// Generate unique IDs
 
-document.querySelectorAll(".section").forEach(section => {
-    section.classList.add("hidden");
-});
-
-document.getElementById(sectionId).classList.remove("hidden");
-
-displayResources();
-updateDashboard();
-displayAlerts();
-
-
+function generateID(prefix) {
+return prefix + Date.now() + Math.floor(Math.random() * 1000);
 }
 
-// Save resources to Local Storage
+// Save all data
 
 function saveData() {
 
 
-localStorage.setItem("resources", JSON.stringify(resources));
+localStorage.setItem("rawMaterials", JSON.stringify(rawMaterials));
+
+localStorage.setItem("packagingMaterials", JSON.stringify(packagingMaterials));
+
+localStorage.setItem("products", JSON.stringify(products));
 
 
 }
 
-// Determine resource status
-
-function getStatus(resource) {
-
-
-if (resource.quantity === 0) {
-    return "Out of Stock";
-}
-
-if (resource.quantity <= resource.minimumStock) {
-    return "Low Stock";
-}
-
-return "In Stock";
-
-
-}
-
-// Add or Update Resource
-
-document.getElementById("resourceForm").addEventListener("submit", function(event) {
-
-
-event.preventDefault();
-
-const editId = document.getElementById("editId").value;
-
-const name = document.getElementById("resourceName").value.trim();
-const category = document.getElementById("category").value;
-const quantity = Number(document.getElementById("quantity").value);
-const unit = document.getElementById("unit").value.trim();
-const minimumStock = Number(document.getElementById("minimumStock").value);
-
-if (!name || !category || !unit ||
-    !Number.isFinite(quantity) || quantity < 0 ||
-    !Number.isFinite(minimumStock) || minimumStock < 0) {
-
-    alert("Please enter valid resource details.");
-    return;
-}
-
-if (editId !== "") {
-
-    const resource = resources.find(r => r.id === editId);
-
-    if (resource) {
-        resource.name = name;
-        resource.category = category;
-        resource.quantity = quantity;
-        resource.unit = unit;
-        resource.minimumStock = minimumStock;
-    }
-
-    document.getElementById("submitButton").innerText = "Add Resource";
-
-} else {
-
-    const newResource = {
-        id: "R" + Date.now(),
-        name,
-        category,
-        quantity,
-        unit,
-        minimumStock
-    };
-
-    resources.push(newResource);
-
-}
-
-saveData();
-
-this.reset();
-
-document.getElementById("editId").value = "";
-
-displayResources();
-updateDashboard();
-displayAlerts();
-
-
-});
-
-// Display Resources
-
-function displayResources() {
-
-
-const table = document.getElementById("resourceTable");
-
-const searchValue = document.getElementById("search").value.toLowerCase();
-
-table.innerHTML = "";
-
-const filteredResources = resources.filter(resource =>
-    resource.name.toLowerCase().includes(searchValue) ||
-    resource.category.toLowerCase().includes(searchValue) ||
-    resource.id.toLowerCase().includes(searchValue)
-);
-
-filteredResources.forEach(resource => {
-
-    const status = getStatus(resource);
-
-    let statusClass = "in-stock";
-
-    if (status === "Low Stock") {
-        statusClass = "low-stock";
-    }
-
-    if (status === "Out of Stock") {
-        statusClass = "out-stock";
-    }
-
-    table.innerHTML += `
-        <tr>
-            <td>${resource.id}</td>
-            <td>${escapeHTML(resource.name)}</td>
-            <td>${escapeHTML(resource.category)}</td>
-            <td>${resource.quantity} ${escapeHTML(resource.unit)}</td>
-            <td class="status ${statusClass}">${status}</td>
-            <td>
-                <button class="edit-btn"
-                    onclick="editResource('${resource.id}')">Edit</button>
-
-                <button class="delete-btn"
-                    onclick="deleteResource('${resource.id}')">Delete</button>
-            </td>
-        </tr>
-    `;
-
-});
-
-if (filteredResources.length === 0) {
-    table.innerHTML = `<tr><td colspan="6">No resources found.</td></tr>`;
-}
-
-
-}
-
-// Escape user-entered text before displaying it in HTML
+// Escape HTML
 
 function escapeHTML(value) {
 
@@ -186,132 +42,566 @@ return String(value).replace(/[&<>"']/g, character => ({
 
 }
 
-// Edit Resource
+// Show sections
 
-function editResource(id) {
+function showSection(sectionId) {
 
 
-const resource = resources.find(r => r.id === id);
-
-if (!resource) return;
-
-document.getElementById("editId").value = resource.id;
-document.getElementById("resourceName").value = resource.name;
-document.getElementById("category").value = resource.category;
-document.getElementById("quantity").value = resource.quantity;
-document.getElementById("unit").value = resource.unit;
-document.getElementById("minimumStock").value = resource.minimumStock;
-
-document.getElementById("submitButton").innerText = "Update Resource";
-
-document.getElementById("resourceForm").scrollIntoView({
-    behavior: "smooth"
+document.querySelectorAll(".section").forEach(section => {
+    section.classList.add("hidden");
 });
+
+document.getElementById(sectionId).classList.remove("hidden");
+
+displayRawMaterials();
+displayPackaging();
+displayProducts();
+updateDashboard();
 
 
 }
 
-// Delete Resource
+// =================================
+// RAW MATERIALS
+// =================================
 
-function deleteResource(id) {
+document.getElementById("rawForm").addEventListener("submit", function(event) {
 
 
-if (confirm("Are you sure you want to delete this resource?")) {
+event.preventDefault();
 
-    resources = resources.filter(resource => resource.id !== id);
+const editId = document.getElementById("rawEditId").value;
+
+const name = document.getElementById("rawName").value.trim();
+
+const quantity = Number(document.getElementById("rawQuantity").value);
+
+const unit = document.getElementById("rawUnit").value;
+
+const date = document.getElementById("rawDate").value;
+
+if (!name || !unit || !date || !Number.isFinite(quantity) || quantity < 0) {
+    alert("Please enter valid details.");
+    return;
+}
+
+if (editId) {
+
+    const material = rawMaterials.find(item => item.id === editId);
+
+    if (material) {
+        material.name = name;
+        material.quantity = quantity;
+        material.unit = unit;
+        material.date = date;
+    }
+
+    document.getElementById("rawSubmit").innerText = "Add Material";
+
+} else {
+
+    rawMaterials.push({
+        id: generateID("RM"),
+        name,
+        quantity,
+        unit,
+        date
+    });
+
+}
+
+saveData();
+
+this.reset();
+
+document.getElementById("rawEditId").value = "";
+
+displayRawMaterials();
+updateDashboard();
+
+
+});
+
+function displayRawMaterials() {
+
+
+const table = document.getElementById("rawTable");
+
+const search = document.getElementById("rawSearch").value.toLowerCase();
+
+table.innerHTML = "";
+
+const filtered = rawMaterials.filter(item =>
+    item.name.toLowerCase().includes(search) ||
+    item.id.toLowerCase().includes(search)
+);
+
+filtered.forEach(item => {
+
+    table.innerHTML += `
+        <tr>
+            <td>${escapeHTML(item.id)}</td>
+            <td>${escapeHTML(item.name)}</td>
+            <td>${item.quantity} ${escapeHTML(item.unit)}</td>
+            <td>${escapeHTML(item.date)}</td>
+            <td>
+                <button class="edit-btn" onclick="editRaw('${item.id}')">Edit</button>
+                <button class="delete-btn" onclick="deleteRaw('${item.id}')">Delete</button>
+            </td>
+        </tr>
+    `;
+
+});
+
+if (filtered.length === 0) {
+    table.innerHTML = `<tr><td colspan="5">No raw materials found.</td></tr>`;
+}
+
+
+}
+
+function editRaw(id) {
+
+const item = rawMaterials.find(r => r.id === id);
+
+if (!item) return;
+
+document.getElementById("rawEditId").value = item.id;
+document.getElementById("rawName").value = item.name;
+document.getElementById("rawQuantity").value = item.quantity;
+document.getElementById("rawUnit").value = item.unit;
+document.getElementById("rawDate").value = item.date;
+
+document.getElementById("rawSubmit").innerText = "Update Material";
+
+document.getElementById("rawForm").scrollIntoView({ behavior: "smooth" });
+
+
+}
+
+function deleteRaw(id) {
+
+
+if (confirm("Delete this raw material?")) {
+
+    rawMaterials = rawMaterials.filter(item => item.id !== id);
 
     saveData();
 
-    displayResources();
+    displayRawMaterials();
     updateDashboard();
-    displayAlerts();
 
 }
 
 
 }
 
-// Update Dashboard
+// =================================
+// PACKAGING MATERIALS
+// =================================
+
+// Calculate total packaging quantity
+
+function calculatePackaging() {
+
+
+const boxes = Number(document.getElementById("packBoxes").value);
+
+const perBox = Number(document.getElementById("packPerBox").value);
+
+const total = boxes * perBox;
+
+document.getElementById("packCalculation").innerText =
+    "Total Quantity: " + total + " pieces";
+
+
+}
+
+document.getElementById("packBoxes").addEventListener("input", calculatePackaging);
+
+document.getElementById("packPerBox").addEventListener("input", calculatePackaging);
+
+document.getElementById("packagingForm").addEventListener("submit", function(event) {
+
+
+event.preventDefault();
+
+const editId = document.getElementById("packEditId").value;
+
+const name = document.getElementById("packName").value;
+
+const capacity = document.getElementById("packCapacity").value.trim();
+
+const boxes = Number(document.getElementById("packBoxes").value);
+
+const perBox = Number(document.getElementById("packPerBox").value);
+
+const date = document.getElementById("packDate").value;
+
+if (!name || !capacity || !date ||
+    !Number.isInteger(boxes) || boxes < 1 ||
+    !Number.isInteger(perBox) || perBox < 1) {
+
+    alert("Please enter valid packaging details.");
+    return;
+
+}
+
+const total = boxes * perBox;
+
+if (editId) {
+
+    const item = packagingMaterials.find(p => p.id === editId);
+
+    if (item) {
+
+        item.name = name;
+        item.capacity = capacity;
+        item.boxes = boxes;
+        item.perBox = perBox;
+        item.total = total;
+        item.date = date;
+
+    }
+
+    document.getElementById("packSubmit").innerText = "Add Packaging";
+
+} else {
+
+    packagingMaterials.push({
+
+        id: generateID("PM"),
+        name,
+        capacity,
+        boxes,
+        perBox,
+        total,
+        date
+
+    });
+
+}
+
+saveData();
+
+this.reset();
+
+document.getElementById("packEditId").value = "";
+
+calculatePackaging();
+
+displayPackaging();
+updateDashboard();
+
+
+});
+
+function displayPackaging() {
+
+
+const table = document.getElementById("packTable");
+
+const search = document.getElementById("packSearch").value.toLowerCase();
+
+table.innerHTML = "";
+
+const filtered = packagingMaterials.filter(item =>
+    item.name.toLowerCase().includes(search) ||
+    item.capacity.toLowerCase().includes(search) ||
+    item.id.toLowerCase().includes(search)
+);
+
+filtered.forEach(item => {
+
+    table.innerHTML += `
+        <tr>
+            <td>${escapeHTML(item.id)}</td>
+            <td>${escapeHTML(item.name)}</td>
+            <td>${escapeHTML(item.capacity)}</td>
+            <td>${item.boxes} × ${item.perBox} = ${item.total} pieces</td>
+            <td>${escapeHTML(item.date)}</td>
+            <td>
+                <button class="edit-btn" onclick="editPackaging('${item.id}')">Edit</button>
+                <button class="delete-btn" onclick="deletePackaging('${item.id}')">Delete</button>
+            </td>
+        </tr>
+    `;
+
+});
+
+if (filtered.length === 0) {
+    table.innerHTML = `<tr><td colspan="6">No packaging materials found.</td></tr>`;
+}
+
+
+}
+
+function editPackaging(id) {
+
+
+const item = packagingMaterials.find(p => p.id === id);
+
+if (!item) return;
+
+document.getElementById("packEditId").value = item.id;
+document.getElementById("packName").value = item.name;
+document.getElementById("packCapacity").value = item.capacity;
+document.getElementById("packBoxes").value = item.boxes;
+document.getElementById("packPerBox").value = item.perBox;
+document.getElementById("packDate").value = item.date;
+
+document.getElementById("packSubmit").innerText = "Update Packaging";
+
+calculatePackaging();
+
+document.getElementById("packagingForm").scrollIntoView({ behavior: "smooth" });
+
+
+}
+
+function deletePackaging(id) {
+
+
+if (confirm("Delete this packaging material?")) {
+
+    packagingMaterials = packagingMaterials.filter(item => item.id !== id);
+
+    saveData();
+
+    displayPackaging();
+    updateDashboard();
+
+}
+
+
+}
+
+// =================================
+// TOTAL PRODUCTS
+// =================================
+
+document.getElementById("productForm").addEventListener("submit", function(event) {
+
+
+event.preventDefault();
+
+const editId = document.getElementById("productEditId").value;
+
+const name = document.getElementById("productName").value.trim();
+
+const quantity = Number(document.getElementById("productQuantity").value);
+
+const unit = document.getElementById("productUnit").value;
+
+const date = document.getElementById("productDate").value;
+
+if (!name || !unit || !date || !Number.isFinite(quantity) || quantity < 0) {
+
+    alert("Please enter valid product details.");
+    return;
+
+}
+
+if (editId) {
+
+    const product = products.find(p => p.id === editId);
+
+    if (product) {
+
+        product.name = name;
+        product.quantity = quantity;
+        product.unit = unit;
+        product.date = date;
+
+    }
+
+    document.getElementById("productSubmit").innerText = "Add Product";
+
+} else {
+
+    products.push({
+
+        id: generateID("FP"),
+        name,
+        quantity,
+        unit,
+        date
+
+    });
+
+}
+
+saveData();
+
+this.reset();
+
+document.getElementById("productEditId").value = "";
+
+displayProducts();
+updateDashboard();
+
+
+});
+
+function displayProducts() {
+
+
+const table = document.getElementById("productTable");
+
+const search = document.getElementById("productSearch").value.toLowerCase();
+
+table.innerHTML = "";
+
+const filtered = products.filter(item =>
+    item.name.toLowerCase().includes(search) ||
+    item.id.toLowerCase().includes(search)
+);
+
+filtered.forEach(item => {
+
+    table.innerHTML += `
+        <tr>
+            <td>${escapeHTML(item.id)}</td>
+            <td>${escapeHTML(item.name)}</td>
+            <td>${item.quantity} ${escapeHTML(item.unit)}</td>
+            <td>${escapeHTML(item.date)}</td>
+            <td>
+                <button class="edit-btn" onclick="editProduct('${item.id}')">Edit</button>
+                <button class="delete-btn" onclick="deleteProduct('${item.id}')">Delete</button>
+            </td>
+        </tr>
+    `;
+
+});
+
+if (filtered.length === 0) {
+    table.innerHTML = `<tr><td colspan="5">No products found.</td></tr>`;
+}
+
+
+}
+
+function editProduct(id) {
+
+
+const item = products.find(p => p.id === id);
+
+if (!item) return;
+
+document.getElementById("productEditId").value = item.id;
+document.getElementById("productName").value = item.name;
+document.getElementById("productQuantity").value = item.quantity;
+document.getElementById("productUnit").value = item.unit;
+document.getElementById("productDate").value = item.date;
+
+document.getElementById("productSubmit").innerText = "Update Product";
+
+document.getElementById("productForm").scrollIntoView({ behavior: "smooth" });
+
+
+}
+
+function deleteProduct(id) {
+
+
+if (confirm("Delete this product?")) {
+
+    products = products.filter(item => item.id !== id);
+
+    saveData();
+
+    displayProducts();
+    updateDashboard();
+
+}
+
+
+}
+
+// =================================
+// DASHBOARD
+// =================================
 
 function updateDashboard() {
 
+document.getElementById("rawCount").innerText = rawMaterials.length;
 
-const total = resources.length;
+document.getElementById("packagingCount").innerText = packagingMaterials.length;
 
-const inStock = resources.filter(r => getStatus(r) === "In Stock").length;
-
-const lowStock = resources.filter(r => getStatus(r) === "Low Stock").length;
-
-const outStock = resources.filter(r => getStatus(r) === "Out of Stock").length;
-
-document.getElementById("totalResources").innerText = total;
-
-document.getElementById("inStock").innerText = inStock;
-
-document.getElementById("lowStock").innerText = lowStock;
-
-document.getElementById("outStock").innerText = outStock;
+document.getElementById("productCount").innerText = products.length;
 
 
 const dashboardTable = document.getElementById("dashboardTable");
 
 dashboardTable.innerHTML = "";
 
-resources.slice(-5).reverse().forEach(resource => {
+const allResources = [
+
+    ...rawMaterials.map(item => ({
+        id: item.id,
+        name: item.name,
+        category: "Raw Material",
+        quantity: item.quantity + " " + item.unit,
+        date: item.date
+    })),
+
+    ...packagingMaterials.map(item => ({
+        id: item.id,
+        name: item.name,
+        category: "Packaging",
+        quantity: item.total + " pieces",
+        date: item.date
+    })),
+
+    ...products.map(item => ({
+        id: item.id,
+        name: item.name,
+        category: "Finished Product",
+        quantity: item.quantity + " " + item.unit,
+        date: item.date
+    }))
+
+];
+
+allResources.sort((a, b) => b.date.localeCompare(a.date));
+
+allResources.slice(0, 5).forEach(item => {
 
     dashboardTable.innerHTML += `
         <tr>
-            <td>${resource.id}</td>
-            <td>${escapeHTML(resource.name)}</td>
-            <td>${resource.quantity} ${escapeHTML(resource.unit)}</td>
-            <td>${getStatus(resource)}</td>
+            <td>${escapeHTML(item.id)}</td>
+            <td>${escapeHTML(item.name)}</td>
+            <td>${escapeHTML(item.category)}</td>
+            <td>${escapeHTML(item.quantity)}</td>
+            <td>${escapeHTML(item.date)}</td>
         </tr>
     `;
 
 });
 
+if (allResources.length === 0) {
 
-}
-
-// Display Low Stock Alerts
-
-function displayAlerts() {
-
-
-const alertTable = document.getElementById("alertTable");
-
-alertTable.innerHTML = "";
-
-const lowResources = resources.filter(resource =>
-    getStatus(resource) !== "In Stock"
-);
-
-lowResources.forEach(resource => {
-
-    alertTable.innerHTML += `
+    dashboardTable.innerHTML = `
         <tr>
-            <td>${resource.id}</td>
-            <td>${escapeHTML(resource.name)}</td>
-            <td>${resource.quantity} ${escapeHTML(resource.unit)}</td>
-            <td>${resource.minimumStock} ${escapeHTML(resource.unit)}</td>
+            <td colspan="5">No resources added yet.</td>
         </tr>
     `;
 
-});
-
-if (lowResources.length === 0) {
-    alertTable.innerHTML = `
-        <tr>
-            <td colspan="4">No stock alerts. All resources are sufficiently stocked.</td>
-        </tr>
-    `;
 }
 
 
 }
 
-// Load application when page opens
+// =================================
+// INITIALIZE APPLICATION
+// =================================
 
-displayResources();
+displayRawMaterials();
+
+displayPackaging();
+
+displayProducts();
+
 updateDashboard();
-displayAlerts();
+
+calculatePackaging();
