@@ -4,95 +4,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hardik Herbals - Resource Management</title>
+    <title>Hardik Herbals - Resource Management System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <div class="sidebar">
         <h2>Hardik Herbals</h2>
-        <p class="subtitle">Resource Management</p>
+        <p>Resource Management</p>
 
-        <nav>
-            <button class="nav-btn active" onclick="showPage('home', this)">
+        <ul>
+            <li onclick="showPage('home')" id="homeMenu" class="active">
                 Home
-            </button>
+            </li>
 
-            <button class="nav-btn" onclick="showPage('products', this)">
+            <li onclick="showPage('products')" id="productsMenu">
                 View Products
-            </button>
-        </nav>
-    </aside>
-
+            </li>
+        </ul>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <div class="main-content">
 
-        <!-- HOME PAGE -->
+        <!-- Home Page -->
         <section id="homePage">
 
             <h1>Resource Management System</h1>
-            <p class="description">Manage your inventory resources</p>
+            <p class="subtitle">Manage your resources efficiently</p>
 
-
-            <!-- Row 1: Raw Ingredients -->
-            <div class="entry-row">
+            <!-- Raw Ingredients -->
+            <div class="entry-card">
                 <h2>Raw Ingredients</h2>
 
-                <form id="rawForm" class="entry-form">
+                <div class="form-row">
 
-                    <input type="text" id="rawName" placeholder="Ingredient Name" required>
+                    <input type="text" id="rawName" placeholder="Ingredient Name">
 
-                    <input type="number" id="rawQty" placeholder="Quantity" min="0" step="any" required>
+                    <input type="number" id="rawQuantity" placeholder="Quantity" min="0" step="any">
 
                     <select id="rawUnit">
                         <option value="Kg">Kg</option>
                         <option value="Grams">Grams</option>
                     </select>
 
-                    <input type="number" id="rawMin" placeholder="Minimum Stock" min="0" step="any" required>
+                    <button onclick="addRawIngredient()">
+                        Add
+                    </button>
 
-                    <input type="date" id="rawDate" required>
-
-                    <button type="submit">Add</button>
-
-                </form>
+                </div>
             </div>
 
-
-            <!-- Row 2: Packaging Materials -->
-            <div class="entry-row">
+            <!-- Packaging Materials -->
+            <div class="entry-card">
                 <h2>Packaging Materials</h2>
 
-                <form id="packForm" class="entry-form">
+                <div class="form-row">
 
-                    <input type="text" id="packName" placeholder="Material Name" required>
+                    <input type="text" id="packName" placeholder="Packaging Name">
 
-                    <input type="text" id="packSize" placeholder="Size (500ml, 1L)" required>
+                    <input type="text" id="packSize" placeholder="Capacity (500 ml, 1 L)">
 
-                    <input type="number" id="packQty" placeholder="Quantity (Pieces)" min="0" required>
+                    <input type="number" id="packQuantity" placeholder="Quantity" min="0" step="any">
 
-                    <input type="number" id="packMin" placeholder="Minimum Stock" min="0" required>
+                    <button onclick="addPackagingMaterial()">
+                        Add
+                    </button>
 
-                    <input type="date" id="packDate" required>
-
-                    <button type="submit">Add</button>
-
-                </form>
+                </div>
             </div>
 
-
-            <!-- Row 3: Ready Products -->
-            <div class="entry-row">
+            <!-- Ready Products -->
+            <div class="entry-card">
                 <h2>Ready Products</h2>
 
-                <form id="readyForm" class="entry-form">
+                <div class="form-row">
 
-                    <input type="text" id="readyName" placeholder="Product Name" required>
+                    <input type="text" id="readyName" placeholder="Product Name">
 
-                    <input type="number" id="readyQty" placeholder="Quantity" min="0" step="any" required>
+                    <input type="number" id="readyQuantity" placeholder="Quantity" min="0" step="any">
 
                     <select id="readyUnit">
                         <option value="Pieces">Pieces</option>
@@ -102,109 +94,147 @@
                         <option value="Kg">Kg</option>
                     </select>
 
-                    <input type="number" id="readyMin" placeholder="Minimum Stock" min="0" step="any" required>
+                    <button onclick="addReadyProduct()">
+                        Add
+                    </button>
 
-                    <input type="date" id="readyDate" required>
-
-                    <button type="submit">Add</button>
-
-                </form>
+                </div>
             </div>
-
-            <p id="message"></p>
 
         </section>
 
 
-        <!-- VIEW PRODUCTS PAGE -->
-        <section id="productsPage" class="hidden">
+        <!-- View Products Page -->
+        <section id="productsPage" style="display: none;">
 
             <h1>View Products</h1>
-            <p class="description">Available stock details</p>
+            <p class="subtitle">View and manage available stock</p>
 
-            <!-- Stock Indicator Legend -->
-            <div class="legend">
-                <span class="status in-stock">● In Stock</span>
-                <span class="status low-stock">● Low Stock</span>
-                <span class="status out-stock">● Out of Stock</span>
+            <!-- Summary Boxes -->
+            <div class="summary-grid">
+
+                <div class="summary-card">
+                    <h3>Raw Ingredients</h3>
+                    <p id="rawCount">0</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Packaging Materials</h3>
+                    <p id="packCount">0</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Ready Products</h3>
+                    <p id="readyCount">0</p>
+                </div>
+
             </div>
+
+
+            <!-- Stock Status Section -->
+            <div class="status-section">
+
+                <h3>Stock Indicator</h3>
+
+                <div class="status-legend">
+
+                    <span class="status out-stock">
+                        ● Out of Stock
+                    </span>
+
+                    <span class="status low-stock">
+                        ● Low Stock
+                    </span>
+
+                    <span class="status in-stock">
+                        ● In Stock
+                    </span>
+
+                </div>
+
+            </div>
+
 
             <!-- Search -->
-            <input type="text" id="searchInput" placeholder="Search products..." class="search-box">
+            <div class="search-box">
+
+                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="displayStocks()">
+
+            </div>
 
 
-            <!-- Raw Ingredients -->
-            <div class="stock-section">
+            <!-- Raw Ingredients Table -->
+            <div class="table-section">
+
                 <h2>Raw Ingredients</h2>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Quantity</th>
-                                <th>Minimum Stock</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                        <tbody id="rawTable"></tbody>
-                    </table>
-                </div>
+                    <tbody id="rawTable"></tbody>
+                </table>
+
             </div>
 
 
-            <!-- Packaging Materials -->
-            <div class="stock-section">
+            <!-- Packaging Materials Table -->
+            <div class="table-section">
+
                 <h2>Packaging Materials</h2>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Size</th>
-                                <th>Quantity</th>
-                                <th>Minimum Stock</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Capacity</th>
+                            <th>Quantity</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                        <tbody id="packTable"></tbody>
-                    </table>
-                </div>
+                    <tbody id="packTable"></tbody>
+                </table>
+
             </div>
 
 
-            <!-- Ready Products -->
-            <div class="stock-section">
+            <!-- Ready Products Table -->
+            <div class="table-section">
+
                 <h2>Ready Products</h2>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Minimum Stock</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                        <tbody id="readyTable"></tbody>
-                    </table>
-                </div>
+                    <tbody id="readyTable"></tbody>
+                </table>
+
             </div>
 
         </section>
 
-    </main>
+    </div>
 
     <script src="script.js"></script>
 

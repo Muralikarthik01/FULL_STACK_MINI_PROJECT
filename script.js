@@ -1,343 +1,445 @@
-// Get saved data from Local Storage
-
-let rawMaterials = JSON.parse(localStorage.getItem("rawMaterials")) || [];
-
-let packagingMaterials = JSON.parse(localStorage.getItem("packagingMaterials")) || [];
-
-let readyProducts = JSON.parse(localStorage.getItem("readyProducts")) || [];
+// Minimum stock is fixed to 5 units
+const MINIMUM_STOCK = 5;
 
 
-// Save data in Local Storage
+// Load data from Local Storage
+let rawMaterials =
+    JSON.parse(localStorage.getItem("rawMaterials")) || [];
 
+let packagingMaterials =
+    JSON.parse(localStorage.getItem("packagingMaterials")) || [];
+
+let readyProducts =
+    JSON.parse(localStorage.getItem("readyProducts")) || [];
+
+
+// Generate today's date automatically
+function getTodayDate() {
+
+    const today = new Date();
+
+    return today.getFullYear() + "-" +
+        String(today.getMonth() + 1).padStart(2, "0") + "-" +
+        String(today.getDate()).padStart(2, "0");
+
+}
+
+
+// Save data to Local Storage
 function saveData() {
 
-    localStorage.setItem("rawMaterials", JSON.stringify(rawMaterials));
+    localStorage.setItem(
+        "rawMaterials",
+        JSON.stringify(rawMaterials)
+    );
 
-    localStorage.setItem("packagingMaterials", JSON.stringify(packagingMaterials));
+    localStorage.setItem(
+        "packagingMaterials",
+        JSON.stringify(packagingMaterials)
+    );
 
-    localStorage.setItem("readyProducts", JSON.stringify(readyProducts));
+    localStorage.setItem(
+        "readyProducts",
+        JSON.stringify(readyProducts)
+    );
 
 }
 
 
 // Navigation between pages
+function showPage(page) {
 
-function showPage(page, button) {
+    const homePage = document.getElementById("homePage");
+    const productsPage = document.getElementById("productsPage");
 
-    document.getElementById("homePage").classList.add("hidden");
+    const homeMenu = document.getElementById("homeMenu");
+    const productsMenu = document.getElementById("productsMenu");
 
-    document.getElementById("productsPage").classList.add("hidden");
+    if (page === "home") {
 
-    document.getElementById(page + "Page").classList.remove("hidden");
+        homePage.style.display = "block";
+        productsPage.style.display = "none";
 
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.classList.remove("active");
-    });
+        homeMenu.classList.add("active");
+        productsMenu.classList.remove("active");
 
-    button.classList.add("active");
+    }
 
-    if (page === "products") {
+    else {
+
+        homePage.style.display = "none";
+        productsPage.style.display = "block";
+
+        homeMenu.classList.remove("active");
+        productsMenu.classList.add("active");
+
         displayStocks();
+
     }
 
 }
 
 
-// Show success message
+// Add Raw Ingredient
+function addRawIngredient() {
 
-function showMessage(message) {
+    const name =
+        document.getElementById("rawName").value.trim();
 
-    const msg = document.getElementById("message");
+    const quantity =
+        Number(document.getElementById("rawQuantity").value);
 
-    msg.textContent = message;
-
-    setTimeout(() => {
-        msg.textContent = "";
-    }, 2500);
-
-}
+    const unit =
+        document.getElementById("rawUnit").value;
 
 
-// Add Raw Ingredients
+    if (name === "" ||
+        document.getElementById("rawQuantity").value === "" ||
+        !Number.isFinite(quantity) ||
+        quantity < 0) {
 
-document.getElementById("rawForm").addEventListener("submit", function(e) {
+        alert("Please enter a valid ingredient name and quantity.");
+        return;
 
-    e.preventDefault();
+    }
+
 
     const item = {
+
         id: Date.now(),
-        name: document.getElementById("rawName").value.trim(),
-        quantity: Number(document.getElementById("rawQty").value),
-        unit: document.getElementById("rawUnit").value,
-        minimum: Number(document.getElementById("rawMin").value),
-        date: document.getElementById("rawDate").value
+
+        name: name,
+
+        quantity: quantity,
+
+        unit: unit,
+
+        minimum: MINIMUM_STOCK,
+
+        date: getTodayDate()
+
     };
+
 
     rawMaterials.push(item);
 
     saveData();
 
-    this.reset();
+    document.getElementById("rawName").value = "";
+    document.getElementById("rawQuantity").value = "";
 
-    showMessage("Raw ingredient added successfully!");
+    alert("Raw ingredient added successfully!");
 
-});
+}
 
 
-// Add Packaging Materials
+// Add Packaging Material
+function addPackagingMaterial() {
 
-document.getElementById("packForm").addEventListener("submit", function(e) {
+    const name =
+        document.getElementById("packName").value.trim();
 
-    e.preventDefault();
+    const size =
+        document.getElementById("packSize").value.trim();
+
+    const quantity =
+        Number(document.getElementById("packQuantity").value);
+
+
+    if (name === "" ||
+        size === "" ||
+        document.getElementById("packQuantity").value === "" ||
+        !Number.isFinite(quantity) ||
+        quantity < 0) {
+
+        alert("Please enter valid packaging details.");
+        return;
+
+    }
+
 
     const item = {
+
         id: Date.now(),
-        name: document.getElementById("packName").value.trim(),
-        size: document.getElementById("packSize").value.trim(),
-        quantity: Number(document.getElementById("packQty").value),
-        minimum: Number(document.getElementById("packMin").value),
-        date: document.getElementById("packDate").value
+
+        name: name,
+
+        size: size,
+
+        quantity: quantity,
+
+        minimum: MINIMUM_STOCK,
+
+        date: getTodayDate()
+
     };
+
 
     packagingMaterials.push(item);
 
     saveData();
 
-    this.reset();
+    document.getElementById("packName").value = "";
+    document.getElementById("packSize").value = "";
+    document.getElementById("packQuantity").value = "";
 
-    showMessage("Packaging material added successfully!");
+    alert("Packaging material added successfully!");
 
-});
+}
 
 
-// Add Ready Products
+// Add Ready Product
+function addReadyProduct() {
 
-document.getElementById("readyForm").addEventListener("submit", function(e) {
+    const name =
+        document.getElementById("readyName").value.trim();
 
-    e.preventDefault();
+    const quantity =
+        Number(document.getElementById("readyQuantity").value);
+
+    const unit =
+        document.getElementById("readyUnit").value;
+
+
+    if (name === "" ||
+        document.getElementById("readyQuantity").value === "" ||
+        !Number.isFinite(quantity) ||
+        quantity < 0) {
+
+        alert("Please enter a valid product name and quantity.");
+        return;
+
+    }
+
 
     const item = {
+
         id: Date.now(),
-        name: document.getElementById("readyName").value.trim(),
-        quantity: Number(document.getElementById("readyQty").value),
-        unit: document.getElementById("readyUnit").value,
-        minimum: Number(document.getElementById("readyMin").value),
-        date: document.getElementById("readyDate").value
+
+        name: name,
+
+        quantity: quantity,
+
+        unit: unit,
+
+        minimum: MINIMUM_STOCK,
+
+        date: getTodayDate()
+
     };
+
 
     readyProducts.push(item);
 
     saveData();
 
-    this.reset();
+    document.getElementById("readyName").value = "";
+    document.getElementById("readyQuantity").value = "";
 
-    showMessage("Ready product added successfully!");
+    alert("Ready product added successfully!");
 
-});
+}
 
 
-// Determine Stock Status
-
-function getStatus(quantity, minimum) {
+// Get Stock Status
+function getStatus(quantity) {
 
     if (quantity === 0) {
+
         return '<span class="status out-stock">● Out of Stock</span>';
+
     }
 
-    else if (quantity <= minimum) {
+    else if (quantity <= MINIMUM_STOCK) {
+
         return '<span class="status low-stock">● Low Stock</span>';
+
     }
 
     else {
+
         return '<span class="status in-stock">● In Stock</span>';
+
     }
 
 }
 
 
-// Display Raw Ingredients
+// Update the three summary boxes
+function updateSummary() {
 
-function displayRawMaterials(search) {
+    document.getElementById("rawCount").textContent =
+        rawMaterials.length;
 
-    const table = document.getElementById("rawTable");
+    document.getElementById("packCount").textContent =
+        packagingMaterials.length;
 
-    table.innerHTML = "";
-
-    const filtered = rawMaterials.filter(item =>
-        item.name.toLowerCase().includes(search)
-    );
-
-    if (filtered.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="6">No raw ingredients found</td>
-            </tr>
-        `;
-        return;
-    }
-
-    filtered.forEach(item => {
-
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(item.name)}</td>
-                <td>${item.quantity} ${escapeHTML(item.unit)}</td>
-                <td>${item.minimum} ${escapeHTML(item.unit)}</td>
-                <td>${escapeHTML(item.date)}</td>
-                <td>${getStatus(item.quantity, item.minimum)}</td>
-                <td>
-                    <button class="delete-btn"
-                        onclick="deleteItem('raw', ${item.id})">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        `;
-
-    });
+    document.getElementById("readyCount").textContent =
+        readyProducts.length;
 
 }
 
 
-// Display Packaging Materials
-
-function displayPackagingMaterials(search) {
-
-    const table = document.getElementById("packTable");
-
-    table.innerHTML = "";
-
-    const filtered = packagingMaterials.filter(item =>
-        item.name.toLowerCase().includes(search)
-    );
-
-    if (filtered.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="7">No packaging materials found</td>
-            </tr>
-        `;
-        return;
-    }
-
-    filtered.forEach(item => {
-
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(item.name)}</td>
-                <td>${escapeHTML(item.size)}</td>
-                <td>${item.quantity} Pieces</td>
-                <td>${item.minimum} Pieces</td>
-                <td>${escapeHTML(item.date)}</td>
-                <td>${getStatus(item.quantity, item.minimum)}</td>
-                <td>
-                    <button class="delete-btn"
-                        onclick="deleteItem('pack', ${item.id})">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        `;
-
-    });
-
-}
-
-
-// Display Ready Products
-
-function displayReadyProducts(search) {
-
-    const table = document.getElementById("readyTable");
-
-    table.innerHTML = "";
-
-    const filtered = readyProducts.filter(item =>
-        item.name.toLowerCase().includes(search)
-    );
-
-    if (filtered.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="6">No ready products found</td>
-            </tr>
-        `;
-        return;
-    }
-
-    filtered.forEach(item => {
-
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(item.name)}</td>
-                <td>${item.quantity} ${escapeHTML(item.unit)}</td>
-                <td>${item.minimum} ${escapeHTML(item.unit)}</td>
-                <td>${escapeHTML(item.date)}</td>
-                <td>${getStatus(item.quantity, item.minimum)}</td>
-                <td>
-                    <button class="delete-btn"
-                        onclick="deleteItem('ready', ${item.id})">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        `;
-
-    });
-
-}
-
-
-// Display all three categories
-
+// Display all stock records
 function displayStocks() {
 
-    const search = document.getElementById("searchInput").value
-        .trim().toLowerCase();
+    const searchText =
+        document.getElementById("searchInput").value.toLowerCase();
 
-    displayRawMaterials(search);
 
-    displayPackagingMaterials(search);
+    const rawTable = document.getElementById("rawTable");
+    const packTable = document.getElementById("packTable");
+    const readyTable = document.getElementById("readyTable");
 
-    displayReadyProducts(search);
+
+    rawTable.innerHTML = "";
+    packTable.innerHTML = "";
+    readyTable.innerHTML = "";
+
+
+    // Display Raw Ingredients
+    rawMaterials.forEach((item, index) => {
+
+        if (item.name.toLowerCase().includes(searchText)) {
+
+            rawTable.innerHTML += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td>${item.name}</td>
+
+                    <td>${item.quantity} ${item.unit}</td>
+
+                    <td>${item.date}</td>
+
+                    <td>${getStatus(item.quantity)}</td>
+
+                    <td>
+                        <button class="delete-btn"
+                                onclick="deleteItem('raw', ${index})">
+                            Delete
+                        </button>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    });
+
+
+    // Display Packaging Materials
+    packagingMaterials.forEach((item, index) => {
+
+        if (item.name.toLowerCase().includes(searchText)) {
+
+            packTable.innerHTML += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td>${item.name}</td>
+
+                    <td>${item.size}</td>
+
+                    <td>${item.quantity} Pieces</td>
+
+                    <td>${item.date}</td>
+
+                    <td>${getStatus(item.quantity)}</td>
+
+                    <td>
+                        <button class="delete-btn"
+                                onclick="deleteItem('pack', ${index})">
+                            Delete
+                        </button>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    });
+
+
+    // Display Ready Products
+    readyProducts.forEach((item, index) => {
+
+        if (item.name.toLowerCase().includes(searchText)) {
+
+            readyTable.innerHTML += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td>${item.name}</td>
+
+                    <td>${item.quantity} ${item.unit}</td>
+
+                    <td>${item.date}</td>
+
+                    <td>${getStatus(item.quantity)}</td>
+
+                    <td>
+                        <button class="delete-btn"
+                                onclick="deleteItem('ready', ${index})">
+                            Delete
+                        </button>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    });
+
+
+    // Update summary counts
+    updateSummary();
 
 }
 
 
-// Search Functionality
+// Delete Stock Item
+function deleteItem(category, index) {
 
-document.getElementById("searchInput").addEventListener("input", function() {
-
-    displayStocks();
-
-});
+    const confirmDelete =
+        confirm("Are you sure you want to delete this item?");
 
 
-// Delete Stock
-
-function deleteItem(category, id) {
-
-    if (!confirm("Are you sure you want to delete this item?")) {
+    if (!confirmDelete) {
         return;
     }
+
 
     if (category === "raw") {
 
-        rawMaterials = rawMaterials.filter(item => item.id !== id);
+        rawMaterials.splice(index, 1);
 
     }
 
     else if (category === "pack") {
 
-        packagingMaterials = packagingMaterials.filter(item => item.id !== id);
+        packagingMaterials.splice(index, 1);
 
     }
 
     else if (category === "ready") {
 
-        readyProducts = readyProducts.filter(item => item.id !== id);
+        readyProducts.splice(index, 1);
 
     }
+
 
     saveData();
 
@@ -346,27 +448,5 @@ function deleteItem(category, id) {
 }
 
 
-// Prevent HTML entered as item names from being interpreted as markup
-
-function escapeHTML(value) {
-
-    return String(value).replace(/[&<>"']/g, function(char) {
-
-        const entities = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        };
-
-        return entities[char];
-
-    });
-
-}
-
-
-// Display saved stocks when the page loads
-
+// Initial display
 displayStocks();
