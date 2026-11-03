@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Hardik Herbals - Resource Management System</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,10 +14,12 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
+
         <h2>Hardik Herbals</h2>
         <p>Resource Management</p>
 
         <ul>
+
             <li onclick="showPage('home')" id="homeMenu" class="active">
                 Home
             </li>
@@ -23,20 +27,33 @@
             <li onclick="showPage('products')" id="productsMenu">
                 View Products
             </li>
+
+            <li onclick="showPage('valuation')" id="valuationMenu">
+                Product Valuation
+            </li>
+
         </ul>
+
     </div>
+
 
     <!-- Main Content -->
     <div class="main-content">
 
-        <!-- Home Page -->
+
+        <!-- HOME PAGE -->
         <section id="homePage">
 
             <h1>Resource Management System</h1>
-            <p class="subtitle">Manage your resources efficiently</p>
+
+            <p class="subtitle">
+                Manage your resources efficiently
+            </p>
+
 
             <!-- Raw Ingredients -->
             <div class="entry-card">
+
                 <h2>Raw Ingredients</h2>
 
                 <div class="form-row">
@@ -46,8 +63,10 @@
                     <input type="number" id="rawQuantity" placeholder="Quantity" min="0" step="any">
 
                     <select id="rawUnit">
+
                         <option value="Kg">Kg</option>
                         <option value="Grams">Grams</option>
+
                     </select>
 
                     <button onclick="addRawIngredient()">
@@ -55,10 +74,13 @@
                     </button>
 
                 </div>
+
             </div>
+
 
             <!-- Packaging Materials -->
             <div class="entry-card">
+
                 <h2>Packaging Materials</h2>
 
                 <div class="form-row">
@@ -74,10 +96,13 @@
                     </button>
 
                 </div>
+
             </div>
+
 
             <!-- Ready Products -->
             <div class="entry-card">
+
                 <h2>Ready Products</h2>
 
                 <div class="form-row">
@@ -87,45 +112,66 @@
                     <input type="number" id="readyQuantity" placeholder="Quantity" min="0" step="any">
 
                     <select id="readyUnit">
+
                         <option value="Pieces">Pieces</option>
                         <option value="Packets">Packets</option>
                         <option value="Boxes">Boxes</option>
                         <option value="Bottles">Bottles</option>
                         <option value="Kg">Kg</option>
+
                     </select>
+
+                    <input type="number" id="readyPrice" placeholder="Price per Unit (₹)" min="0" step="any">
 
                     <button onclick="addReadyProduct()">
                         Add
                     </button>
 
                 </div>
+
             </div>
 
         </section>
 
 
-        <!-- View Products Page -->
-        <section id="productsPage" style="display: none;">
+
+        <!-- VIEW PRODUCTS PAGE -->
+        <section id="productsPage" style="display:none;">
 
             <h1>View Products</h1>
-            <p class="subtitle">View and manage available stock</p>
 
-            <!-- Summary Boxes -->
+            <p class="subtitle">
+                View and manage available stock
+            </p>
+
+
+            <!-- Stock Indicator Boxes -->
             <div class="summary-grid">
 
-                <div class="summary-card">
-                    <h3>Raw Ingredients</h3>
-                    <p id="rawCount">0</p>
+                <div class="summary-card out-card">
+
+                    <h3>Out of Stock</h3>
+
+                    <p id="outCount">0</p>
+
                 </div>
 
-                <div class="summary-card">
-                    <h3>Packaging Materials</h3>
-                    <p id="packCount">0</p>
+
+                <div class="summary-card low-card">
+
+                    <h3>Low Stock</h3>
+
+                    <p id="lowCount">0</p>
+
                 </div>
 
-                <div class="summary-card">
-                    <h3>Ready Products</h3>
-                    <p id="readyCount">0</p>
+
+                <div class="summary-card in-card">
+
+                    <h3>In Stock</h3>
+
+                    <p id="inCount">0</p>
+
                 </div>
 
             </div>
@@ -169,7 +215,9 @@
                 <h2>Raw Ingredients</h2>
 
                 <table>
+
                     <thead>
+
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
@@ -178,9 +226,11 @@
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="rawTable"></tbody>
+
                 </table>
 
             </div>
@@ -192,7 +242,9 @@
                 <h2>Packaging Materials</h2>
 
                 <table>
+
                     <thead>
+
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
@@ -202,9 +254,11 @@
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="packTable"></tbody>
+
                 </table>
 
             </div>
@@ -216,7 +270,9 @@
                 <h2>Ready Products</h2>
 
                 <table>
+
                     <thead>
+
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
@@ -225,9 +281,73 @@
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="readyTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- PRODUCT VALUATION PAGE -->
+        <section id="valuationPage" style="display:none;">
+
+            <h1>Product Valuation</h1>
+
+            <p class="subtitle">
+                Calculate the total value of ready products
+            </p>
+
+
+            <!-- Valuation Summary -->
+            <div class="valuation-summary">
+
+                <div class="valuation-card">
+
+                    <h3>Total Products</h3>
+
+                    <p id="valuationCount">0</p>
+
+                </div>
+
+
+                <div class="valuation-card">
+
+                    <h3>Total Stock Value</h3>
+
+                    <p id="totalValue">₹0.00</p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Valuation Table -->
+            <div class="table-section">
+
+                <h2>Ready Products Valuation</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price per Unit</th>
+                            <th>Total Price</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="valuationTable"></tbody>
+
                 </table>
 
             </div>
@@ -235,6 +355,7 @@
         </section>
 
     </div>
+
 
     <script src="script.js"></script>
 

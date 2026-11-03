@@ -13,7 +13,7 @@ let readyProducts =
     JSON.parse(localStorage.getItem("readyProducts")) || [];
 
 
-// Generate today's date automatically
+// Automatically generate today's date
 function getTodayDate() {
 
     const today = new Date();
@@ -46,59 +46,90 @@ function saveData() {
 }
 
 
-// Navigation between pages
+// PAGE NAVIGATION
 function showPage(page) {
 
     const homePage = document.getElementById("homePage");
+
     const productsPage = document.getElementById("productsPage");
 
+    const valuationPage = document.getElementById("valuationPage");
+
+
     const homeMenu = document.getElementById("homeMenu");
+
     const productsMenu = document.getElementById("productsMenu");
+
+    const valuationMenu = document.getElementById("valuationMenu");
+
+
+    // Hide all pages
+    homePage.style.display = "none";
+    productsPage.style.display = "none";
+    valuationPage.style.display = "none";
+
+
+    // Remove active class
+    homeMenu.classList.remove("active");
+    productsMenu.classList.remove("active");
+    valuationMenu.classList.remove("active");
+
 
     if (page === "home") {
 
         homePage.style.display = "block";
-        productsPage.style.display = "none";
 
         homeMenu.classList.add("active");
-        productsMenu.classList.remove("active");
 
     }
 
-    else {
+    else if (page === "products") {
 
-        homePage.style.display = "none";
         productsPage.style.display = "block";
 
-        homeMenu.classList.remove("active");
         productsMenu.classList.add("active");
 
         displayStocks();
 
     }
 
+    else if (page === "valuation") {
+
+        valuationPage.style.display = "block";
+
+        valuationMenu.classList.add("active");
+
+        displayValuation();
+
+    }
+
 }
 
 
-// Add Raw Ingredient
+// ADD RAW INGREDIENT
 function addRawIngredient() {
 
     const name =
         document.getElementById("rawName").value.trim();
 
-    const quantity =
-        Number(document.getElementById("rawQuantity").value);
+    const quantityInput =
+        document.getElementById("rawQuantity").value;
+
+    const quantity = Number(quantityInput);
 
     const unit =
         document.getElementById("rawUnit").value;
 
 
-    if (name === "" ||
-        document.getElementById("rawQuantity").value === "" ||
+    if (
+        name === "" ||
+        quantityInput === "" ||
         !Number.isFinite(quantity) ||
-        quantity < 0) {
+        quantity < 0
+    ) {
 
         alert("Please enter a valid ingredient name and quantity.");
+
         return;
 
     }
@@ -125,15 +156,18 @@ function addRawIngredient() {
 
     saveData();
 
+
     document.getElementById("rawName").value = "";
+
     document.getElementById("rawQuantity").value = "";
+
 
     alert("Raw ingredient added successfully!");
 
 }
 
 
-// Add Packaging Material
+// ADD PACKAGING MATERIAL
 function addPackagingMaterial() {
 
     const name =
@@ -142,17 +176,22 @@ function addPackagingMaterial() {
     const size =
         document.getElementById("packSize").value.trim();
 
-    const quantity =
-        Number(document.getElementById("packQuantity").value);
+    const quantityInput =
+        document.getElementById("packQuantity").value;
+
+    const quantity = Number(quantityInput);
 
 
-    if (name === "" ||
+    if (
+        name === "" ||
         size === "" ||
-        document.getElementById("packQuantity").value === "" ||
+        quantityInput === "" ||
         !Number.isFinite(quantity) ||
-        quantity < 0) {
+        quantity < 0
+    ) {
 
         alert("Please enter valid packaging details.");
+
         return;
 
     }
@@ -179,34 +218,51 @@ function addPackagingMaterial() {
 
     saveData();
 
+
     document.getElementById("packName").value = "";
+
     document.getElementById("packSize").value = "";
+
     document.getElementById("packQuantity").value = "";
+
 
     alert("Packaging material added successfully!");
 
 }
 
 
-// Add Ready Product
+// ADD READY PRODUCT
 function addReadyProduct() {
 
     const name =
         document.getElementById("readyName").value.trim();
 
-    const quantity =
-        Number(document.getElementById("readyQuantity").value);
+    const quantityInput =
+        document.getElementById("readyQuantity").value;
+
+    const quantity = Number(quantityInput);
 
     const unit =
         document.getElementById("readyUnit").value;
 
+    const priceInput =
+        document.getElementById("readyPrice").value;
 
-    if (name === "" ||
-        document.getElementById("readyQuantity").value === "" ||
+    const price = Number(priceInput);
+
+
+    if (
+        name === "" ||
+        quantityInput === "" ||
+        priceInput === "" ||
         !Number.isFinite(quantity) ||
-        quantity < 0) {
+        !Number.isFinite(price) ||
+        quantity < 0 ||
+        price < 0
+    ) {
 
-        alert("Please enter a valid product name and quantity.");
+        alert("Please enter valid product details and price.");
+
         return;
 
     }
@@ -222,6 +278,8 @@ function addReadyProduct() {
 
         unit: unit,
 
+        price: price,
+
         minimum: MINIMUM_STOCK,
 
         date: getTodayDate()
@@ -233,15 +291,20 @@ function addReadyProduct() {
 
     saveData();
 
+
     document.getElementById("readyName").value = "";
+
     document.getElementById("readyQuantity").value = "";
+
+    document.getElementById("readyPrice").value = "";
+
 
     alert("Ready product added successfully!");
 
 }
 
 
-// Get Stock Status
+// GET STOCK STATUS
 function getStatus(quantity) {
 
     if (quantity === 0) {
@@ -265,22 +328,57 @@ function getStatus(quantity) {
 }
 
 
-// Update the three summary boxes
-function updateSummary() {
+// UPDATE STOCK INDICATOR COUNTS
+function updateStockIndicator() {
 
-    document.getElementById("rawCount").textContent =
-        rawMaterials.length;
+    // Combine all three categories
+    const allMaterials = [
+        ...rawMaterials,
+        ...packagingMaterials,
+        ...readyProducts
+    ];
 
-    document.getElementById("packCount").textContent =
-        packagingMaterials.length;
 
-    document.getElementById("readyCount").textContent =
-        readyProducts.length;
+    let outStock = 0;
+
+    let lowStock = 0;
+
+    let inStock = 0;
+
+
+    allMaterials.forEach(item => {
+
+        if (item.quantity === 0) {
+
+            outStock++;
+
+        }
+
+        else if (item.quantity <= MINIMUM_STOCK) {
+
+            lowStock++;
+
+        }
+
+        else {
+
+            inStock++;
+
+        }
+
+    });
+
+
+    document.getElementById("outCount").textContent = outStock;
+
+    document.getElementById("lowCount").textContent = lowStock;
+
+    document.getElementById("inCount").textContent = inStock;
 
 }
 
 
-// Display all stock records
+// DISPLAY ALL STOCKS
 function displayStocks() {
 
     const searchText =
@@ -288,16 +386,20 @@ function displayStocks() {
 
 
     const rawTable = document.getElementById("rawTable");
+
     const packTable = document.getElementById("packTable");
+
     const readyTable = document.getElementById("readyTable");
 
 
     rawTable.innerHTML = "";
+
     packTable.innerHTML = "";
+
     readyTable.innerHTML = "";
 
 
-    // Display Raw Ingredients
+    // RAW INGREDIENTS
     rawMaterials.forEach((item, index) => {
 
         if (item.name.toLowerCase().includes(searchText)) {
@@ -312,15 +414,19 @@ function displayStocks() {
 
                     <td>${item.quantity} ${item.unit}</td>
 
-                    <td>${item.date}</td>
+                    <td>${item.date || "-"}</td>
 
                     <td>${getStatus(item.quantity)}</td>
 
                     <td>
+
                         <button class="delete-btn"
                                 onclick="deleteItem('raw', ${index})">
+
                             Delete
+
                         </button>
+
                     </td>
 
                 </tr>
@@ -332,7 +438,7 @@ function displayStocks() {
     });
 
 
-    // Display Packaging Materials
+    // PACKAGING MATERIALS
     packagingMaterials.forEach((item, index) => {
 
         if (item.name.toLowerCase().includes(searchText)) {
@@ -349,15 +455,19 @@ function displayStocks() {
 
                     <td>${item.quantity} Pieces</td>
 
-                    <td>${item.date}</td>
+                    <td>${item.date || "-"}</td>
 
                     <td>${getStatus(item.quantity)}</td>
 
                     <td>
+
                         <button class="delete-btn"
                                 onclick="deleteItem('pack', ${index})">
+
                             Delete
+
                         </button>
+
                     </td>
 
                 </tr>
@@ -369,7 +479,7 @@ function displayStocks() {
     });
 
 
-    // Display Ready Products
+    // READY PRODUCTS
     readyProducts.forEach((item, index) => {
 
         if (item.name.toLowerCase().includes(searchText)) {
@@ -384,15 +494,19 @@ function displayStocks() {
 
                     <td>${item.quantity} ${item.unit}</td>
 
-                    <td>${item.date}</td>
+                    <td>${item.date || "-"}</td>
 
                     <td>${getStatus(item.quantity)}</td>
 
                     <td>
+
                         <button class="delete-btn"
                                 onclick="deleteItem('ready', ${index})">
+
                             Delete
+
                         </button>
+
                     </td>
 
                 </tr>
@@ -404,13 +518,13 @@ function displayStocks() {
     });
 
 
-    // Update summary counts
-    updateSummary();
+    // Update stock indicator boxes
+    updateStockIndicator();
 
 }
 
 
-// Delete Stock Item
+// DELETE STOCK ITEM
 function deleteItem(category, index) {
 
     const confirmDelete =
@@ -418,7 +532,9 @@ function deleteItem(category, index) {
 
 
     if (!confirmDelete) {
+
         return;
+
     }
 
 
@@ -448,5 +564,89 @@ function deleteItem(category, index) {
 }
 
 
-// Initial display
+// FORMAT PRICE IN INDIAN RUPEES
+function formatPrice(value) {
+
+    return Number(value).toLocaleString("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2
+    });
+
+}
+
+
+// DISPLAY PRODUCT VALUATION
+function displayValuation() {
+
+    const valuationTable =
+        document.getElementById("valuationTable");
+
+
+    valuationTable.innerHTML = "";
+
+
+    let totalStockValue = 0;
+
+
+    readyProducts.forEach((item, index) => {
+
+        // Support older records without a price field
+        const price = Number(item.price) || 0;
+
+        const totalPrice = item.quantity * price;
+
+        totalStockValue += totalPrice;
+
+
+        valuationTable.innerHTML += `
+
+            <tr>
+
+                <td>${index + 1}</td>
+
+                <td>${item.name}</td>
+
+                <td>${item.quantity} ${item.unit}</td>
+
+                <td>${formatPrice(price)}</td>
+
+                <td>${formatPrice(totalPrice)}</td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    // Display number of ready products
+    document.getElementById("valuationCount").textContent =
+        readyProducts.length;
+
+
+    // Display total stock value
+    document.getElementById("totalValue").textContent =
+        formatPrice(totalStockValue);
+
+
+    // Display message if there are no products
+    if (readyProducts.length === 0) {
+
+        valuationTable.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">No ready products available.</td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+// INITIAL DISPLAY
 displayStocks();

@@ -11,7 +11,7 @@ body {
 }
 
 
-/* Sidebar */
+/* SIDEBAR */
 
 .sidebar {
     width: 240px;
@@ -52,7 +52,7 @@ body {
 }
 
 
-/* Main Content */
+/* MAIN CONTENT */
 
 .main-content {
     margin-left: 240px;
@@ -71,13 +71,14 @@ h1 {
 }
 
 
-/* Home Entry Cards */
+/* HOME ENTRY CARDS */
 
 .entry-card {
     background-color: white;
     padding: 25px;
     margin-bottom: 25px;
     border-radius: 10px;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -127,7 +128,7 @@ button:hover {
 }
 
 
-/* Summary Boxes */
+/* STOCK INDICATOR SUMMARY BOXES */
 
 .summary-grid {
     display: grid;
@@ -141,8 +142,9 @@ button:hover {
     padding: 22px;
     border-radius: 10px;
     text-align: center;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid #287b50;
+    border-left: 5px solid;
 }
 
 .summary-card h3 {
@@ -152,19 +154,43 @@ button:hover {
 }
 
 .summary-card p {
-    color: #174d35;
     font-size: 30px;
     font-weight: bold;
 }
 
+.out-card {
+    border-color: red;
+}
 
-/* Stock Status Section */
+.out-card p {
+    color: red;
+}
+
+.low-card {
+    border-color: #d99a00;
+}
+
+.low-card p {
+    color: #d99a00;
+}
+
+.in-card {
+    border-color: green;
+}
+
+.in-card p {
+    color: green;
+}
+
+
+/* STOCK STATUS SECTION */
 
 .status-section {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 25px;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -197,7 +223,7 @@ button:hover {
 }
 
 
-/* Search Box */
+/* SEARCH */
 
 .search-box {
     margin-bottom: 25px;
@@ -209,14 +235,16 @@ button:hover {
 }
 
 
-/* Tables */
+/* TABLES */
 
 .table-section {
     background-color: white;
     padding: 25px;
     margin-bottom: 30px;
     border-radius: 10px;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
     overflow-x: auto;
 }
 
@@ -248,7 +276,7 @@ tr:hover {
 }
 
 
-/* Delete Button */
+/* DELETE BUTTON */
 
 .delete-btn {
     background-color: #dc3545;
@@ -260,9 +288,40 @@ tr:hover {
 }
 
 
-/* Responsive Design */
+/* PRODUCT VALUATION */
 
-@media (max-width: 900px) {
+.valuation-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.valuation-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #287b50;
+}
+
+.valuation-card h3 {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.valuation-card p {
+    color: #174d35;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1000px) {
 
     .form-row {
         flex-wrap: wrap;
@@ -273,7 +332,15 @@ tr:hover {
         min-width: 150px;
     }
 
+}
+
+@media (max-width: 750px) {
+
     .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .valuation-summary {
         grid-template-columns: 1fr;
     }
 
